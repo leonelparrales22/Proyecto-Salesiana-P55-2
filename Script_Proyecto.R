@@ -13,3 +13,6 @@ x5=dataset$CHMIN
 x6=dataset$CHMAX
 x6=dataset$PRP
 y=dataset$ERP
+
+#Tenemos un total de 209 registros de nuestro Dataset
+
