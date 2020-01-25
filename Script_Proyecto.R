@@ -15,4 +15,7 @@ x6=dataset$PRP
 y=dataset$ERP
 
 #Tenemos un total de 209 registros de nuestro Dataset
+#70% para testing 146
+#30% para aprendizaje 63
+
 
