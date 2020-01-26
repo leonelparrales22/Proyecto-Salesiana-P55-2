@@ -3,11 +3,11 @@
 #Importacion del Dataset
 library(readr)
 dataset <- read_csv("Documentos/Estadistica_Proyecto/Dataset/Training.csv")
-sapply(machin, function(x) sum(is.na(x))) #numero de nulos y faltantes que existe en la data 
+sapply(dataset, function(x) sum(is.na(x))) #numero de nulos y faltantes que existe en la data 
 
 library(readr)
 dataset2 <- read_csv("Documentos/Estadistica_Proyecto/Dataset/Test.csv")
-sapply(machin, function(x) sum(is.na(x))) #numero de nulos y faltantes que existe en la data 
+sapply(dataset2, function(x) sum(is.na(x))) #numero de nulos y faltantes que existe en la data 
 
 #Asignacion de las variables
 x1=dataset$MYCT
@@ -79,13 +79,13 @@ errorPromedio
 #Tenemos un error promedio de 26.55031 en nuestro Test
 
 
-
 ##############################################################
 #######################USANDO PRIMERO PCA#####################
 ##############################################################
 
+matriz  = cbind(dataset[, 3:9]) 
 # Test de Barlett
-bt = bartlett.test(machin[, 3:9])
+bt = bartlett.test(dataset[, 3:9])
 
 # Kaiser, Meyer, Olkin - KMO
 #install.packages("REdaS")
@@ -102,53 +102,56 @@ summary(pca)
 plot(pca)# grafica 
 
 
-
-#fit <- princomp(matriz)
-#screeplot(fit)
-#screeplot(fit, npcs = 7, type = "lines")
-
-
-
-
-
-
-
-
-
-
 # Componentes Principales
-cp = predict(pca, newdata=tail(matriz, 209))
+cp = predict(pca, newdata=tail(matriz, 146))
 cp = as.data.frame(cp)
 
-#Regresi�n con PCA
+y=dataset$ERP
+
+#Regresion con PCA
 vende = lm(y ~ cp$PC1 + cp$PC2 + cp$PC3 + cp$PC4 + cp$PC5 + cp$PC6 +cp$PC7 ) #calculo de la regresion lineal (funcion directa)
-print(summary(vende)) #resumen de los resultados de la regresion lineal
+print(summary(vende)) #r-ajustado 0.9486 
 
 vende5 = lm(y ~ cp$PC1 + cp$PC2 + cp$PC3 + cp$PC4 + cp$PC5) #calculo de la regresion lineal (funcion directa)
-print(summary(vende5)) #resumen de los resultados de la regresion lineal
+print(summary(vende5)) #r-ajustado 0.9437 
 
 vende6 = lm(y ~ cp$PC1 + cp$PC2 + cp$PC3 + cp$PC4) #calculo de la regresion lineal (funcion directa)
-print(summary(vende6)) #resumen de los resultados de la regresion lineal
+print(summary(vende6)) #r-ajustado 0.9377 
 
 vende3 = lm(y ~ cp$PC1 + cp$PC2 + cp$PC3) #calculo de la regresion lineal (funcion directa)
-print(summary(vende3)) #resumen de los resultados de la regresion lineal
+print(summary(vende3)) #r-ajustado 0.9359 
 
 
+b0=vende5$coefficients[1]
+b1=vende5$coefficients[2]
+b2=vende5$coefficients[3]
+b3=vende5$coefficients[4]
+b4=vende5$coefficients[5]
+b5=vende5$coefficients[6]
 
 
-########################################################################
-##################  Elección de Variables #############################
-#######################################################################
+######EN TRAINING
+#ecuacion estimada
+y_estimada=b0+b1*cp$PC1+b2*cp$PC2+b3*cp$PC3+b4*cp$PC4+b5*cp$PC5
 
-le.a = step(lm(y~x1+x2+x3+x4+x5+x6+x7),direction = "both")
-summary(le.a)
+error=y-y_estimada
+errorValorAbsoluto=abs(error)
+errorPromedio=sum(errorValorAbsoluto)/length(y)
+errorPromedio
+#El error promedio es de 18.30 en TRAINING
 
-le.b = step(lm(y~x1+x2+x3+x4+x5+x6+x7),direction = "backward")
-summary(le.b)
+###EN TEST
+y=dataset2$ERP
 
-le.c = lm(y~1)
-le.d = step(le.c,direction = "forward",scope = (~x1+x2+x3+x4+x5+x6+x7))
-summary(le.d)
+matriz  = cbind(dataset2[, 3:9]) 
+pca = prcomp(matriz, center = TRUE, scale. = TRUE) #,rank. = 3
+cp = predict(pca, newdata=tail(matriz, 63))
+cp = as.data.frame(cp)
 
+y_estimada=b0+b1*cp$PC1+b2*cp$PC2+b3*cp$PC3+b4*cp$PC4+b5*cp$PC5
 
-
+error=y-y_estimada
+errorValorAbsoluto=abs(error)
+errorPromedio=sum(errorValorAbsoluto)/length(y)
+errorPromedio
+#El error promedio es de 60.94 en TEST
