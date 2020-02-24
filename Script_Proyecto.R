@@ -1,12 +1,12 @@
-#PROYECTO ESTADISTICA PARA CIENCIAS DE LA COMPUTACION
+  #PROYECTO ESTADISTICA PARA CIENCIAS DE LA COMPUTACION
 
 #Importacion del Dataset
 library(readr)
-dataset <- read_csv("Documentos/Estadistica_Proyecto/Dataset/Training.csv")
+dataset <- read_csv("Dataset/Training.csv")
 sapply(dataset, function(x) sum(is.na(x))) #numero de nulos y faltantes que existe en la data 
 
 library(readr)
-dataset2 <- read_csv("Documentos/Estadistica_Proyecto/Dataset/Test.csv")
+dataset2 <- read_csv("Dataset/Test.csv")
 sapply(dataset2, function(x) sum(is.na(x))) #numero de nulos y faltantes que existe en la data 
 
 #Asignacion de las variables
@@ -122,17 +122,15 @@ vende3 = lm(y ~ cp$PC1 + cp$PC2 + cp$PC3) #calculo de la regresion lineal (funci
 print(summary(vende3)) #r-ajustado 0.9359 
 
 
-b0=vende5$coefficients[1]
-b1=vende5$coefficients[2]
-b2=vende5$coefficients[3]
-b3=vende5$coefficients[4]
-b4=vende5$coefficients[5]
-b5=vende5$coefficients[6]
+b0=vende3$coefficients[1]
+b1=vende3$coefficients[2]
+b2=vende3$coefficients[3]
+b3=vende3$coefficients[4]
 
 
 ######EN TRAINING
 #ecuacion estimada
-y_estimada=b0+b1*cp$PC1+b2*cp$PC2+b3*cp$PC3+b4*cp$PC4+b5*cp$PC5
+y_estimada=b0+b1*cp$PC1+b2*cp$PC2+b3*cp$PC3
 
 error=y-y_estimada
 errorValorAbsoluto=abs(error)
@@ -148,10 +146,12 @@ pca = prcomp(matriz, center = TRUE, scale. = TRUE) #,rank. = 3
 cp = predict(pca, newdata=tail(matriz, 63))
 cp = as.data.frame(cp)
 
-y_estimada=b0+b1*cp$PC1+b2*cp$PC2+b3*cp$PC3+b4*cp$PC4+b5*cp$PC5
+y_estimada=b0+b1*cp$PC1+b2*cp$PC2+b3*cp$PC3
 
 error=y-y_estimada
 errorValorAbsoluto=abs(error)
 errorPromedio=sum(errorValorAbsoluto)/length(y)
 errorPromedio
 #El error promedio es de 60.94 en TEST
+
+  
